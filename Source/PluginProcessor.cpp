@@ -183,6 +183,42 @@ void SimpleeqAudioProcessor::setStateInformation (const void* data, int sizeInBy
     // whose contents will have been created by the getStateInformation() call.
 }
 
+// Here we call our createParameterLayout() function
+juce::AudioProcessorValueTreeState::ParameterLayout SimpleeqAudioProcessor::createParameterLayout()
+{
+    // for more info: https://docs.juce.com/master/classAudioProcessorParameter.html
+    // The AudioProcessorParameter class has several derived types
+    // that represent the following types of parameter layouts
+    // * Sliders -> wide range of values (AudioParameterFloat)
+    // * Switches
+    // * Combo Boxes
+    // * IntInputs
+    
+    // juce::AudioParameterFloat
+    // @params:
+    // * parameterID (String)
+    // * parameterName (Name)
+    // * normalisableRange (juce::NormalizableRange<float>)
+    //      * typename ValueType (float)
+    //      * rangeStart
+    //      * rangeEnd
+    //      * intervalValue (steps, e.g. 1 -> 20hz, 21hz, etc.... OR 10 -> 20hz, 30hz, etc...)
+    //      * skewFactor:
+    //          * is 1.0 no skew
+    //          * < 1.0 lower end of range will fill more of slider's length
+    //          * > 1.0 higher end of range will fill more of slider's length
+    // * defaultValue (where the slider begins)
+    
+    juce::AudioProcessorValueTreeState::ParameterLayout layout;
+    
+    // lowcut parameters
+    layout.add(std::make_unique<juce::AudioParameterFloat>("LowCut Freq", "LowCut Freq", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 1.f), 20.f));
+    
+    // highcut parameters
+    
+    return layout;
+}
+
 //==============================================================================
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()

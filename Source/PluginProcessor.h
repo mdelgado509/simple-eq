@@ -52,6 +52,25 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+    
+    // Notes:
+    // * Audio plugins depend on parameters that control the DSP (and GUI)
+    // * JUCE uses the object AudioProcessorValueTreeState to coordinate
+    // * the parameter controls and sync up the parameters
+    //   with the vars in DSP and knobs on GUI
+    
+    // apvts expects a list of all parameters when it is created
+    // this function provides the parameters as an apvts ParameterLayout
+    static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+    
+    
+    // Here we declare an AudioProcessorValueTreeState obj called apvts
+    // @params:
+    // * AudioProcessorToConnectTo = *this
+    // * UndoManager = nullptr (not using)
+    // * Identifier = "Parameters"
+    // * ParameterLayour = createParameterLayout()
+    juce::AudioProcessorValueTreeState apvts {*this, nullptr, "Parameters", createParameterLayout()};
 
 private:
     //==============================================================================
