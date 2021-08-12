@@ -95,6 +95,25 @@ void SimpleeqAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+    
+    // to prepare our filters we send a processSpec object
+    // this will be passed to each link in the chain
+    
+    juce::dsp::ProcessSpec spec;
+    
+    // assign maximum number of samples it will process at one time
+    // the parameter samplesPerBlock
+    spec.maximumBlockSize = samplesPerBlock;
+    
+    // assign number of channels in our case 1 for mono chains
+    spec.numChannels = 1;
+    
+    // assign sampleRate parameter to spec sampleRate attribute
+    spec.sampleRate = sampleRate;
+    
+    // pass spec to each chain to prepare for processing
+    leftChain.prepare(spec);
+    rightChain.prepare(spec);
 }
 
 void SimpleeqAudioProcessor::releaseResources()
@@ -129,6 +148,8 @@ bool SimpleeqAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts)
 }
 #endif
 
+// This function is called by the host and given a buffer
+// which can have any number of channels
 void SimpleeqAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
@@ -143,19 +164,28 @@ void SimpleeqAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
     // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
+    
+    // the ProcessorChain processes a ProcessContext instance
+    // in order to run audio through the links in the chain
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
+    // in order to make a ProcessContext, we need to supply it
+    // with an AudioBlock instance which are constructed
+    // with AudioBuffers
+    juce::dsp::AudioBlock<float> block(buffer);
+    // We need to extract left and right channels (0, 1) from the buffer
+    // which will be wrapped inside more blocks
+    auto leftBlock = block.getSingleChannelBlock(0);
+    auto rightBlock = block.getSingleChannelBlock(1);
+    
+    // create processing context to wrap each audio block for the channels
+    juce::dsp::ProcessContextReplacing<float> leftContext(leftBlock);
+    juce::dsp::ProcessContextReplacing<float> rightContext(rightBlock);
+    
+    // now pass contexts to mono filter chains
+    leftChain.process(leftContext);
+    rightChain.process(rightContext);
 
-        // ..do something to the data...
-    }
+
 }
 
 //==============================================================================
