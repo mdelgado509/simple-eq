@@ -10,6 +10,17 @@
 
 #include <JuceHeader.h>
 
+// extract params values from AudioProcessorValueTreeState using data structure
+struct ChainSettings
+{
+    float peakFreq { 0 }, peakGainInDecibles { 0 }, peakQuality {1.f};
+    float lowCutFreq { 0 }, highCutFreq { 0 };
+    int lowCutSlope { 0 }, highCutSlop { 0 };
+};
+
+// helper function that will pass params into the data structure
+ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts);
+
 //==============================================================================
 /**
 */
@@ -89,6 +100,14 @@ private:
     
     // before we use our filter chains we need to prepare them
     // see prepareToPlay method in PluginProcessor.cpp
+    
+    enum ChainPositions
+    {
+        LowCut,
+        Peak,
+        HighCut
+    };
+    
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleeqAudioProcessor)
 };
