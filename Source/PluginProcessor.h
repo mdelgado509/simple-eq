@@ -10,12 +10,20 @@
 
 #include <JuceHeader.h>
 
+// Cut filter slope dB/oct names
+enum Slope {
+    Slope_12,
+    Slope_24,
+    Slope_36,
+    Slope_48
+};
+
 // extract params values from AudioProcessorValueTreeState using data structure
 struct ChainSettings
 {
     float peakFreq { 0 }, peakGainInDecibles { 0 }, peakQuality {1.f};
     float lowCutFreq { 0 }, highCutFreq { 0 };
-    int lowCutSlope { 0 }, highCutSlop { 0 };
+    Slope lowCutSlope { Slope::Slope_12 }, highCutSlop { Slope::Slope_12 };
 };
 
 // helper function that will pass params into the data structure
