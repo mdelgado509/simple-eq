@@ -119,6 +119,64 @@ private:
     void updatePeakFilter(const ChainSettings& chainSettings);
     using Coefficients = Filter::CoefficientsPtr;
     static void updateCoefficients(Coefficients& old, const Coefficients& replacements);
+    
+    template<typename ChainType, typename CoefficientType>
+    void updateCutFilter(ChainType& leftLowCut,
+                         const CoefficientType& cutCoefficients,
+                         const Slope& lowCutSlope)
+    {
+        // bypasses all 4 positions in the chain
+        leftLowCut.template setBypassed<0>(true);
+        leftLowCut.template setBypassed<1>(true);
+        leftLowCut.template setBypassed<2>(true);
+        leftLowCut.template setBypassed<3>(true);
+        // want to switch filters based on dB/oct name
+        // see enum defined in header
+        // NOTE: enums constants are of int type which is what the AudioParameterChoice object is expressed in
+        
+//        switch ( chainSettings.lowCutSlope )
+        switch ( lowCutSlope )
+        {
+                // switch cases
+            case Slope_12:
+            {   // for each switch case we add another filter coefficient
+                // and switch bypass off in the filter chain position
+                *leftLowCut.template get<0>().coefficients = *cutCoefficients[0];
+                leftLowCut.template setBypassed<0>(false);
+                break;
+            }
+            case Slope_24:
+            {
+                *leftLowCut.template get<0>().coefficients = *cutCoefficients[0];
+                leftLowCut.template setBypassed<0>(false);
+                *leftLowCut.template get<1>().coefficients = *cutCoefficients[1];
+                leftLowCut.template setBypassed<1>(false);
+                break;
+            }
+            case Slope_36:
+            {
+                *leftLowCut.template get<0>().coefficients = *cutCoefficients[0];
+                leftLowCut.template setBypassed<0>(false);
+                *leftLowCut.template get<1>().coefficients = *cutCoefficients[1];
+                leftLowCut.template setBypassed<1>(false);
+                *leftLowCut.template get<2>().coefficients = *cutCoefficients[2];
+                leftLowCut.template setBypassed<2>(false);
+                break;
+            }
+            case Slope_48:
+            {
+                *leftLowCut.template get<0>().coefficients = *cutCoefficients[0];
+                leftLowCut.template setBypassed<0>(false);
+                *leftLowCut.template get<1>().coefficients = *cutCoefficients[1];
+                leftLowCut.template setBypassed<1>(false);
+                *leftLowCut.template get<2>().coefficients = *cutCoefficients[2];
+                leftLowCut.template setBypassed<2>(false);
+                *leftLowCut.template get<3>().coefficients = *cutCoefficients[3];
+                leftLowCut.template setBypassed<3>(false);
+                break;
+            }
+        }
+    }
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleeqAudioProcessor)
 };
