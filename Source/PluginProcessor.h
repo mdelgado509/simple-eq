@@ -23,7 +23,7 @@ struct ChainSettings
 {
     float peakFreq { 0 }, peakGainInDecibles { 0 }, peakQuality {1.f};
     float lowCutFreq { 0 }, highCutFreq { 0 };
-    Slope lowCutSlope { Slope::Slope_12 }, highCutSlop { Slope::Slope_12 };
+    Slope lowCutSlope { Slope::Slope_12 }, highCutSlope { Slope::Slope_12 };
 };
 
 // helper function that will pass params into the data structure
@@ -141,7 +141,7 @@ private:
         // see enum defined in header
         // NOTE: enums constants are of int type which is what the AudioParameterChoice object is expressed in
         
-        switch ( chain )
+        switch ( slope )
         {
             case Slope_48:
             {
