@@ -204,9 +204,9 @@ juce::AudioProcessorEditor* SimpleeqAudioProcessor::createEditor()
     // comment out and return GenericAudioProcssorEditor to test
     // audio parameters
     
-//    return new SimpleeqAudioProcessorEditor (*this);
+    return new SimpleeqAudioProcessorEditor (*this);
 
-    return new juce::GenericAudioProcessorEditor(*this);
+//    return new juce::GenericAudioProcessorEditor(*this);
 }
 
 //==============================================================================
