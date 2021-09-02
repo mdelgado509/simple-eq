@@ -111,7 +111,7 @@ void SimpleeqAudioProcessorEditor::resized()
     
     // retrieve the bounds of GUI
     auto bounds = getBounds();
-    // remove 33% of the area from top for the response curve
+    // remove 33% of the area from top reserved for the response curve
     bounds.removeFromTop(bounds.getHeight() * 0.33);
     // remove 33% of area from left for low cut params
     auto lowCutArea = bounds.removeFromLeft(bounds.getWidth() * 0.33);
@@ -127,6 +127,20 @@ void SimpleeqAudioProcessorEditor::resized()
     peakGainSlider.setBounds(bounds.removeFromTop(bounds.getHeight() * 0.5));
     peakQualitySlider.setBounds(bounds);
 }
+
+void::SimpleeqAudioProcessorEditor::parameterValueChanged(int parameterIndex, float newValue)
+{
+    parametersChanged.set(true);
+};
+
+void::SimpleeqAudioProcessorEditor::timerCallback()
+{
+    if ( parametersChanged.compareAndSetBool(false, true) )
+    {
+        // update monochain from apvts
+        // signal a repaint
+    }
+};
 
 std::vector<juce::Component*> SimpleeqAudioProcessorEditor::getComps()
 {
